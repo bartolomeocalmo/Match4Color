@@ -1,0 +1,323 @@
+/* ===================== BODY & GLOBAL ===================== */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Arial", sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.light {
+  background-color: #f9f9f9;
+  color: #222;
+}
+
+body.dark {
+  background-color: #1e1e1e;
+  color: #eee;
+}
+
+.container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+/* ===================== TITOLI & PARAGRAFI ===================== */
+h1 {
+  font-size: 2.8rem;
+  text-align: center;
+  font-weight: 900;
+  margin-bottom: 5px;
+  background: linear-gradient(90deg, #ff8c00, #ff0080);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+p {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  opacity: 0.85;
+}
+
+/* ===================== PULSANTI ===================== */
+button {
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+body.light button {
+  background-color: #2980b9;
+  color: #fff;
+}
+
+body.dark button {
+  background-color: #555;
+  color: #fff;
+}
+
+/* ===================== SELEZIONE GARMENT / STYLE ===================== */
+.garment-select,
+.style-select {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+.garment-select input,
+.style-select input {
+  display: none;
+}
+
+.garment-select span,
+.style-select span {
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 18px;
+  background: #e0e0e0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: -8px;
+  user-select: none;
+}
+
+.garment-select input:checked + span,
+.style-select input:checked + span {
+  background: #2980b9;
+  color: #fff;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+}
+
+.garment-select span:hover,
+.style-select span:hover {
+  background: #dcdcdc;
+}
+
+/* ===================== COLOR PICKER ===================== */
+input[type="color"] {
+  -webkit-appearance: none;
+  border: none;
+  width: 100%;
+  height: 50px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+input[type="color"]:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 14px;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border-radius: 14px;
+  border: none;
+}
+
+/* ===================== PALETTE CARDS ===================== */
+.color-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  min-height: 80px;
+  border-radius: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  background: #fff;
+}
+
+.color-card:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+}
+
+.color-card.fade-in {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.color-card.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  min-width: 80px;
+  min-height: 80px;
+  border-radius: 14px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===================== SAVED OUTFITS ===================== */
+.saved-outfits {
+  margin-top: 30px;
+  border-top: 1px solid #ccc;
+  padding-top: 20px;
+}
+
+.saved-outfits h3 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.saved-outfits .color-card {
+  width: 100px;
+  height: 100px;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  border: 2px solid transparent;
+  transition: transform 0.3s, border 0.3s;
+}
+
+.saved-outfits .color-card:hover {
+  transform: scale(1.1);
+  border: 2px solid #ff8c00;
+}
+
+.saved-outfit-name {
+  width: 90px;
+  border-radius: 8px;
+  padding: 4px 6px;
+  text-align: center;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+body.dark .saved-outfit-name {
+  background-color: #333;
+  color: #eee;
+  border: 1px solid #555;
+}
+
+/* ===================== THEME SWITCHER ===================== */
+.theme-switcher {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+.theme-switcher button {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  background: linear-gradient(90deg, #ff8c00, #ff0080);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.theme-switcher button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+/* ===================== SHARE LINK ===================== */
+.share-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.generated-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-height: 24px; /* mantiene lo spazio anche quando scompare */
+}
+
+.link-generated {
+  font-weight: bold;
+  color: #2980b9;
+  font-size: 0.95rem;
+}
+
+/* Pulsanti generati (Copia + Salva) */
+.generated-wrapper button {
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.generated-wrapper button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+body.light .generated-wrapper button {
+  background-color: #2980b9;
+  color: #fff;
+}
+
+body.dark .generated-wrapper button {
+  background-color: #555;
+  color: #fff;
+}
+
+/* ===================== AZIONI DOPO PALETTE ===================== */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  align-items: center; /* mantiene ShareLink e Salva Outfit sulla stessa riga */
+}
+
+.action-buttons button:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* ===================== BUTTON SAVE COND ===================== */
+.button-save-cond {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.garment-select label,
+.style-select label {
+  margin: 10px;
+}
