@@ -128,10 +128,17 @@ function App() {
       )}
 
       {/* Sezione outfit salvati */}
+      {/* Sezione outfit salvati */}
       <div className="saved-outfits">
         <h3>I miei outfit salvati</h3>
         {savedOutfits.length === 0 && <p>Nessun outfit salvato</p>}
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            flexWrap: "wrap",
+          }}
+        >
           {savedOutfits.map((o, idx) => (
             <div
               key={idx}
@@ -153,18 +160,21 @@ function App() {
               >
                 {o.baseColor}
               </div>
+
+              {/* Input nome outfit ottimizzato */}
               <input
                 type="text"
                 className="saved-outfit-name"
                 placeholder="Nome outfit"
-                value={o.name}
-                onChange={(e) => {
+                defaultValue={o.name}
+                onBlur={(e) => {
                   const newList = [...savedOutfits];
                   newList[idx].name = e.target.value;
                   setSavedOutfits(newList);
                   localStorage.setItem("savedOutfits", JSON.stringify(newList));
                 }}
               />
+
               {/* Pulsante elimina */}
               <button
                 className="delete-outfit"
