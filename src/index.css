@@ -92,6 +92,13 @@ body.dark button {
   transition: all 0.3s ease;
   margin-left: -8px;
   user-select: none;
+  overflow: hidden;
+
+  /* FIX SAFARI IOS */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .garment-select input:checked + span,
