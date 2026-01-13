@@ -7,6 +7,7 @@ import ShareLink from "./ShareLink";
 import { hexToHSL, buildPalette, getContrast } from "./utils";
 import Toast from "./Toast";
 import ImageColorPicker from "./ImageColorPicker";
+import { Link } from "react-router-dom";
 
 function App() {
   const [baseColor, setBaseColor] = useState("#2980b9");
@@ -205,6 +206,16 @@ function App() {
         show={showToast}
         onClose={() => setShowToast(false)}
       />
+      <footer className="footer">
+        <div>
+          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/terms">Termini e Condizioni</Link>
+        </div>
+        <div style={{ fontSize: "0.8rem", opacity: 0.7 }}>
+          &copy; {new Date().getFullYear()} Match4Color. Tutti i diritti
+          riservati.
+        </div>
+      </footer>
     </div>
   );
 }
