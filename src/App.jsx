@@ -5,6 +5,8 @@ import StyleSelector from "./StyleSelector";
 import Palette from "./Palette";
 import ShareLink from "./ShareLink";
 import { hexToHSL, buildPalette, getContrast } from "./utils";
+import Toast from "./Toast";
+import ImageColorPicker from "./ImageColorPicker";
 
 function App() {
   const [baseColor, setBaseColor] = useState("#2980b9");
@@ -13,6 +15,8 @@ function App() {
   const [palette, setPalette] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showActionButtons, setShowActionButtons] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   // Tema chiaro/scuro
   const [theme, setTheme] = useState(
@@ -75,6 +79,9 @@ function App() {
     const newList = [outfit, ...savedOutfits];
     setSavedOutfits(newList);
     localStorage.setItem("savedOutfits", JSON.stringify(newList));
+
+    setToastMessage("Outfit salvato!");
+    setShowToast(true);
   };
 
   const loadOutfit = (outfit) => {
@@ -101,10 +108,12 @@ function App() {
         </button>
       </div>
 
-      <h1>🎨 Match Color</h1>
+      <h1>Match4Color</h1>
       <p>Seleziona un colore e scopri gli abbinamenti perfetti</p>
-
-      <ColorPicker baseColor={baseColor} setBaseColor={setBaseColor} />
+      <div className="color-row">
+        <ColorPicker baseColor={baseColor} setBaseColor={setBaseColor} />
+        <ImageColorPicker setBaseColor={setBaseColor} />
+      </div>
       <GarmentSelector garment={garment} setGarment={setGarment} />
       <StyleSelector style={style} setStyle={setStyle} />
 
@@ -191,6 +200,11 @@ function App() {
           ))}
         </div>
       </div>
+      <Toast
+        message={toastMessage}
+        show={showToast}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 }

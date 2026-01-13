@@ -1,4 +1,4 @@
-export default function ColorPicker({ baseColor, setBaseColor }) {
+function ColorPicker({ baseColor, setBaseColor }) {
   return (
     <input
       type="color"
@@ -7,3 +7,5 @@ export default function ColorPicker({ baseColor, setBaseColor }) {
     />
   );
 }
+
+export default ColorPicker;

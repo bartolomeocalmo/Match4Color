@@ -26,15 +26,15 @@ body.dark {
 
 /* ===================== TITOLI & PARAGRAFI ===================== */
 h1 {
-  font-size: 2.8rem;
-  text-align: center;
-  font-weight: 900;
-  margin-bottom: 5px;
-  background: linear-gradient(90deg, #ff8c00, #ff0080);
+  font-family: "Poppins", sans-serif;
+  font-weight: 800; /* per il peso più spesso */
+  font-size: 4rem; /* regola la dimensione a piacere */
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-align: center;
+  margin-bottom: 10px;
 }
-
 p {
   text-align: center;
   font-size: 1.1rem;
@@ -42,29 +42,55 @@ p {
   opacity: 0.85;
 }
 
-/* ===================== PULSANTI ===================== */
-button {
+/* ===================== PULSANTI MODERNI ===================== */
+button,
+.generated-wrapper button,
+.action-buttons button,
+.theme-switcher button {
   padding: 10px 18px;
   border-radius: 14px;
   border: none;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  color: #fff;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
 }
 
-button:hover {
-  transform: translateY(-3px) scale(1.05);
+/* Hover uniforme */
+button:hover,
+.generated-wrapper button:hover,
+.action-buttons button:hover,
+.theme-switcher button:hover {
+  filter: brightness(1.05);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 
-body.light button {
-  background-color: #2980b9;
+/* Pulsanti dark mode */
+body.dark button,
+body.dark .generated-wrapper button,
+body.dark .action-buttons button,
+body.dark .theme-switcher button {
+  background: linear-gradient(135deg, #434343, #222);
   color: #fff;
 }
 
-body.dark button {
-  background-color: #555;
+/* Pulsanti outline opzionali */
+button.outline,
+.generated-wrapper button.outline,
+.action-buttons button.outline,
+.theme-switcher button.outline {
+  background: transparent;
+  border: 2px solid #ff8c00;
+  color: #ff8c00;
+}
+
+button.outline:hover,
+.generated-wrapper button.outline:hover,
+.action-buttons button.outline:hover,
+.theme-switcher button.outline:hover {
+  background: #ff8c00;
   color: #fff;
 }
 
@@ -75,16 +101,8 @@ body.dark button {
   gap: 10px;
   justify-content: center;
   margin: 15px 0;
-}
-
-.garment-select,
-.style-select {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin: 15px 0;
-  border-radius: 18px; /* bordo arrotondato sul contenitore */
-  overflow: hidden; /* assicura che gli elementi interni non escano dai bordi */
+  border-radius: 18px;
+  overflow: hidden;
 }
 
 .garment-select input,
@@ -100,8 +118,9 @@ body.dark button {
   padding: 10px 18px;
   border-radius: 18px;
   background: #e0e0e0;
+  color: #000;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   margin-left: -8px;
   user-select: none;
   overflow: hidden;
@@ -110,6 +129,13 @@ body.dark button {
   will-change: transform;
 }
 
+/* Hover per span */
+.garment-select span:hover,
+.style-select span:hover {
+  background: #dcdcdc;
+}
+
+/* Selezione */
 .garment-select input:checked + span,
 .style-select input:checked + span {
   background: #2980b9;
@@ -117,9 +143,23 @@ body.dark button {
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
 }
 
-.garment-select span:hover,
-.style-select span:hover {
-  background: #dcdcdc;
+/* Dark mode per span */
+body.dark .garment-select span,
+body.dark .style-select span {
+  background: #555;
+  color: #eee;
+}
+
+body.dark .garment-select span:hover,
+body.dark .style-select span:hover {
+  background: #666;
+}
+
+body.dark .garment-select input:checked + span,
+body.dark .style-select input:checked + span {
+  background: #2980b9;
+  color: #fff;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* ===================== COLOR PICKER ===================== */
@@ -130,12 +170,7 @@ input[type="color"] {
   height: 50px;
   border-radius: 14px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-input[type="color"]:hover {
-  transform: scale(1.1);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
 }
 
 input[type="color"]::-webkit-color-swatch-wrapper {
@@ -158,14 +193,9 @@ input[type="color"]::-webkit-color-swatch {
   border-radius: 14px;
   font-weight: bold;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
   position: relative;
   background: #fff;
-}
-
-.color-card:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
 }
 
 .color-card.fade-in {
@@ -217,24 +247,19 @@ input[type="color"]::-webkit-color-swatch {
   font-size: 0.9rem;
   margin-bottom: 5px;
   border: 2px solid transparent;
-  transition: transform 0.3s, border 0.3s;
+  transition: all 0.2s ease;
 }
 
-.saved-outfits .color-card:hover {
-  transform: scale(1.1);
-  border: 2px solid #ff8c00;
-}
-
-.saved-outfit-name {
+.saved-outfits .saved-outfit-name {
   width: 90px;
   border-radius: 8px;
   padding: 4px 6px;
   text-align: center;
   font-weight: 500;
-  transition: all 0.3s;
+  transition: all 0.2s ease;
 }
 
-body.dark .saved-outfit-name {
+body.dark .saved-outfits .saved-outfit-name {
   background-color: #333;
   color: #eee;
   border: 1px solid #555;
@@ -245,23 +270,6 @@ body.dark .saved-outfit-name {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 15px;
-}
-
-.theme-switcher button {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-weight: 600;
-  background: linear-gradient(90deg, #ff8c00, #ff0080);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-}
-
-.theme-switcher button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 
 /* ===================== SHARE LINK ===================== */
@@ -277,7 +285,7 @@ body.dark .saved-outfit-name {
   flex-direction: column;
   align-items: center;
   gap: 5px;
-  min-height: 24px; /* mantiene lo spazio anche quando scompare */
+  min-height: 24px;
 }
 
 .link-generated {
@@ -286,43 +294,12 @@ body.dark .saved-outfit-name {
   font-size: 0.95rem;
 }
 
-/* Pulsanti generati (Copia + Salva) */
-.generated-wrapper button {
-  padding: 6px 12px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-}
-
-.generated-wrapper button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-body.light .generated-wrapper button {
-  background-color: #2980b9;
-  color: #fff;
-}
-
-body.dark .generated-wrapper button {
-  background-color: #555;
-  color: #fff;
-}
-
 /* ===================== AZIONI DOPO PALETTE ===================== */
 .action-buttons {
   display: flex;
   gap: 10px;
   margin-top: 10px;
-  align-items: center; /* mantiene ShareLink e Salva Outfit sulla stessa riga */
-}
-
-.action-buttons button:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  align-items: center;
 }
 
 /* ===================== BUTTON SAVE COND ===================== */
@@ -336,4 +313,71 @@ body.dark .generated-wrapper button {
 .garment-select label,
 .style-select label {
   margin: 10px;
+}
+
+/* ===================== COLOR PICKER + CAMERA ===================== */
+.color-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.color-row input[type="color"] {
+  flex: 1;
+  height: 50px;
+}
+
+.camera-btn {
+  height: 50px;
+  min-width: 50px;
+  border-radius: 14px;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* ===================== HOVER UNIVERSALE PER ELEMENTI CLICCABILI ===================== */
+button,
+a,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="color"],
+.color-card,
+.generated-wrapper button,
+.action-buttons button,
+div[role="button"],
+span[role="button"] {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover,
+a:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="color"]:hover,
+.color-card:hover,
+.generated-wrapper button:hover,
+.action-buttons button:hover,
+div[role="button"]:hover,
+span[role="button"]:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+@keyframes rainbowText {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
