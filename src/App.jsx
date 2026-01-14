@@ -8,6 +8,9 @@ import { hexToHSL, buildPalette, getContrast } from "./utils";
 import Toast from "./Toast";
 import ImageColorPicker from "./ImageColorPicker";
 import { Link } from "react-router-dom";
+import GoogleLogin from "./GoogleLogin";
+import { db } from "./firebase";
+import { collection, addDoc, deleteDoc, doc } from "firebase/firestore";
 
 function App() {
   const [baseColor, setBaseColor] = useState("#2980b9");
@@ -18,6 +21,7 @@ function App() {
   const [showActionButtons, setShowActionButtons] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [user, setUser] = useState(null); // utente Google
 
   // Tema chiaro/scuro
   const [theme, setTheme] = useState(
@@ -75,11 +79,22 @@ function App() {
     }, 300);
   };
 
-  const saveOutfit = () => {
+  const saveOutfit = async () => {
     const outfit = { baseColor, garment, style, name: "" };
     const newList = [outfit, ...savedOutfits];
     setSavedOutfits(newList);
     localStorage.setItem("savedOutfits", JSON.stringify(newList));
+
+    if (user) {
+      try {
+        await addDoc(collection(db, "outfits"), {
+          ...outfit,
+          userId: user.uid, // lega outfit all'utente
+        });
+      } catch (error) {
+        console.error("Errore salvataggio Firestore:", error);
+      }
+    }
 
     setToastMessage("Outfit salvato!");
     setShowToast(true);
@@ -98,17 +113,25 @@ function App() {
     const newList = savedOutfits.filter((_, i) => i !== idx);
     setSavedOutfits(newList);
     localStorage.setItem("savedOutfits", JSON.stringify(newList));
+
+    // Puoi aggiungere deleteDoc se vuoi eliminare anche da Firestore
+    // const docRef = doc(db, "outfits", docId);
+    // deleteDoc(docRef);
   };
 
   return (
     <div className={`container ${theme}`}>
-      {/* Toggle tema in alto */}
-      <div className="theme-switcher">
-        <button onClick={toggleTheme}>
-          {theme === "light" ? "🌙 Dark" : "☀️ Light"}
-        </button>
-      </div>
+      <div className="top-bar">
+        {/* Google Login */}
+        <GoogleLogin onUserChange={setUser} />
 
+        {/* Toggle tema */}
+        <div className="theme-switcher">
+          <button onClick={toggleTheme}>
+            {theme === "light" ? "🌙 Dark" : "☀️ Light"}
+          </button>
+        </div>
+      </div>
       <h1>Match4Color</h1>
       <p>Seleziona un colore e scopri gli abbinamenti perfetti</p>
       <div className="color-row">
@@ -118,15 +141,12 @@ function App() {
       <GarmentSelector garment={garment} setGarment={setGarment} />
       <StyleSelector style={style} setStyle={setStyle} />
 
-      {/* Pulsante principale */}
       <div style={{ marginTop: "15px" }}>
         <button onClick={generatePalette}>TROVA COMBINAZIONI</button>
       </div>
 
-      {/* Mostra palette */}
       <Palette palette={palette} loading={loading} />
 
-      {/* Pulsanti ShareLink + Salva Outfit, solo dopo generazione */}
       {showActionButtons && (
         <div
           className="action-buttons"
@@ -137,18 +157,10 @@ function App() {
         </div>
       )}
 
-      {/* Sezione outfit salvati */}
-      {/* Sezione outfit salvati */}
       <div className="saved-outfits">
         <h3>I miei outfit salvati</h3>
         {savedOutfits.length === 0 && <p>Nessun outfit salvato</p>}
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            flexWrap: "wrap",
-          }}
-        >
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
           {savedOutfits.map((o, idx) => (
             <div
               key={idx}
@@ -170,8 +182,6 @@ function App() {
               >
                 {o.baseColor}
               </div>
-
-              {/* Input nome outfit ottimizzato */}
               <input
                 type="text"
                 className="saved-outfit-name"
@@ -184,8 +194,6 @@ function App() {
                   localStorage.setItem("savedOutfits", JSON.stringify(newList));
                 }}
               />
-
-              {/* Pulsante elimina */}
               <button
                 className="delete-outfit"
                 onClick={() => deleteOutfit(idx)}
@@ -201,11 +209,13 @@ function App() {
           ))}
         </div>
       </div>
+
       <Toast
         message={toastMessage}
         show={showToast}
         onClose={() => setShowToast(false)}
       />
+
       <footer className="footer">
         <div>
           <Link to="/privacy">Privacy Policy</Link>
