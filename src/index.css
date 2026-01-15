@@ -301,6 +301,7 @@ body.dark .saved-outfits .saved-outfit-name {
   gap: 10px;
   margin-top: 10px;
   align-items: center;
+  padding-top: 15px;
 }
 
 /* ===================== BUTTON SAVE COND ===================== */

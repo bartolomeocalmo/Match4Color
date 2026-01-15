@@ -10,7 +10,13 @@ import ImageColorPicker from "./ImageColorPicker";
 import { Link } from "react-router-dom";
 import GoogleLogin from "./GoogleLogin";
 import { db } from "./firebase";
-import { collection, addDoc, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 
 function App() {
   const [baseColor, setBaseColor] = useState("#2980b9");
@@ -37,10 +43,63 @@ function App() {
   };
 
   // Outfit salvati
-  const [savedOutfits, setSavedOutfits] = useState(() => {
-    const stored = localStorage.getItem("savedOutfits");
-    return stored ? JSON.parse(stored) : [];
-  });
+  const [savedOutfits, setSavedOutfits] = useState([]);
+
+  // Carica outfit quando cambia user
+  useEffect(() => {
+    const loadOutfits = async () => {
+      const localOutfits =
+        JSON.parse(localStorage.getItem("savedOutfits")) || [];
+
+      if (!user) {
+        // utente anonimo → solo localStorage
+        setSavedOutfits(localOutfits);
+        return;
+      }
+
+      // utente loggato → Firestore
+      try {
+        const q = await getDocs(collection(db, "outfits"));
+        const firestoreOutfits = q.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .filter((o) => o.userId === user.uid);
+
+        // merge Firestore + localStorage, evitando duplicati
+        const merged = [
+          ...firestoreOutfits,
+          ...localOutfits.filter(
+            (lo) =>
+              !firestoreOutfits.some(
+                (fo) =>
+                  fo.baseColor === lo.baseColor &&
+                  fo.garment === lo.garment &&
+                  fo.style === lo.style
+              )
+          ),
+        ];
+
+        setSavedOutfits(merged);
+
+        // salva nuovi outfit locali in Firestore se non hanno id
+        for (const outfit of merged) {
+          if (!outfit.id) {
+            const docRef = await addDoc(collection(db, "outfits"), {
+              ...outfit,
+              userId: user.uid,
+            });
+            outfit.id = docRef.id;
+          }
+        }
+
+        localStorage.removeItem("savedOutfits"); // puliamo locale
+      } catch (error) {
+        console.error("Errore caricamento outfit Firestore:", error);
+        setSavedOutfits(localOutfits); // fallback locale
+      }
+    };
+
+    loadOutfits();
+  }, [user]);
 
   const loadFromURL = () => {
     const params = new URLSearchParams(window.location.search);
@@ -83,17 +142,19 @@ function App() {
     const outfit = { baseColor, garment, style, name: "" };
     const newList = [outfit, ...savedOutfits];
     setSavedOutfits(newList);
-    localStorage.setItem("savedOutfits", JSON.stringify(newList));
 
     if (user) {
       try {
-        await addDoc(collection(db, "outfits"), {
+        const docRef = await addDoc(collection(db, "outfits"), {
           ...outfit,
-          userId: user.uid, // lega outfit all'utente
+          userId: user.uid,
         });
+        outfit.id = docRef.id; // salva id Firestore
       } catch (error) {
         console.error("Errore salvataggio Firestore:", error);
       }
+    } else {
+      localStorage.setItem("savedOutfits", JSON.stringify(newList));
     }
 
     setToastMessage("Outfit salvato!");
@@ -109,14 +170,21 @@ function App() {
     setShowActionButtons(true);
   };
 
-  const deleteOutfit = (idx) => {
+  const deleteOutfit = async (idx) => {
+    const outfitToDelete = savedOutfits[idx];
     const newList = savedOutfits.filter((_, i) => i !== idx);
     setSavedOutfits(newList);
-    localStorage.setItem("savedOutfits", JSON.stringify(newList));
 
-    // Puoi aggiungere deleteDoc se vuoi eliminare anche da Firestore
-    // const docRef = doc(db, "outfits", docId);
-    // deleteDoc(docRef);
+    if (user && outfitToDelete.id) {
+      try {
+        const docRef = doc(db, "outfits", outfitToDelete.id);
+        await deleteDoc(docRef);
+      } catch (error) {
+        console.error("Errore eliminazione Firestore:", error);
+      }
+    } else {
+      localStorage.setItem("savedOutfits", JSON.stringify(newList));
+    }
   };
 
   return (
@@ -191,7 +259,12 @@ function App() {
                   const newList = [...savedOutfits];
                   newList[idx].name = e.target.value;
                   setSavedOutfits(newList);
-                  localStorage.setItem("savedOutfits", JSON.stringify(newList));
+                  if (!user) {
+                    localStorage.setItem(
+                      "savedOutfits",
+                      JSON.stringify(newList)
+                    );
+                  }
                 }}
               />
               <button
