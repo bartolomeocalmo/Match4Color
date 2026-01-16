@@ -71,7 +71,7 @@ export default function Terms() {
         </p>
 
         <p style={{ marginTop: "20px", fontSize: "0.9rem", opacity: 0.8 }}>
-          Aggiornato al 13 gennaio 2026.
+          Aggiornato al 13 gennaio 2026
         </p>
       </div>
     </PageTransition>
