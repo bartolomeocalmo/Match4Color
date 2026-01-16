@@ -144,20 +144,33 @@ function App() {
 
   const saveOutfit = async () => {
     const outfit = { baseColor, garment, style, name: "" };
-    const newList = [outfit, ...savedOutfits];
-    setSavedOutfits(newList);
 
     if (user) {
       try {
+        // salva su Firestore e ottieni id
         const docRef = await addDoc(collection(db, "outfits"), {
           ...outfit,
           userId: user.uid,
         });
-        outfit.id = docRef.id; // salva id Firestore
+        const outfitWithId = { ...outfit, id: docRef.id };
+
+        // aggiorna lo stato dopo aver ottenuto l'id
+        const newList = [outfitWithId, ...savedOutfits];
+        setSavedOutfits(newList);
+
+        // localStorage opzionale: puoi anche tenerlo pulito per fallback
+        localStorage.removeItem("savedOutfits");
       } catch (error) {
         console.error("Errore salvataggio Firestore:", error);
+        // fallback locale
+        const newList = [outfit, ...savedOutfits];
+        setSavedOutfits(newList);
+        localStorage.setItem("savedOutfits", JSON.stringify(newList));
       }
     } else {
+      // utente anonimo → salva solo localStorage
+      const newList = [outfit, ...savedOutfits];
+      setSavedOutfits(newList);
       localStorage.setItem("savedOutfits", JSON.stringify(newList));
     }
 
