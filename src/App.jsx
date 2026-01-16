@@ -64,19 +64,22 @@ function App() {
           .map((doc) => ({ id: doc.id, ...doc.data() }))
           .filter((o) => o.userId === user.uid);
 
-        // merge Firestore + localStorage, evitando duplicati
-        const merged = [
-          ...firestoreOutfits,
-          ...localOutfits.filter(
-            (lo) =>
-              !firestoreOutfits.some(
-                (fo) =>
-                  fo.baseColor === lo.baseColor &&
-                  fo.garment === lo.garment &&
-                  fo.style === lo.style
-              )
-          ),
-        ];
+        // merge solo se ci sono outfit locali rimasti
+        const merged =
+          localOutfits.length > 0
+            ? [
+                ...firestoreOutfits,
+                ...localOutfits.filter(
+                  (lo) =>
+                    !firestoreOutfits.some(
+                      (fo) =>
+                        fo.baseColor === lo.baseColor &&
+                        fo.garment === lo.garment &&
+                        fo.style === lo.style
+                    )
+                ),
+              ]
+            : firestoreOutfits;
 
         setSavedOutfits(merged);
 
@@ -91,7 +94,8 @@ function App() {
           }
         }
 
-        localStorage.removeItem("savedOutfits"); // puliamo locale
+        // solo se merge completato
+        if (localOutfits.length > 0) localStorage.removeItem("savedOutfits");
       } catch (error) {
         console.error("Errore caricamento outfit Firestore:", error);
         setSavedOutfits(localOutfits); // fallback locale
