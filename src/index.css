@@ -515,7 +515,8 @@ body.dark .theme-switcher-btn {
 
 @media (max-width: 480px) {
   h1 {
-    font-size: clamp(1.8rem, 8vw, 3rem); /* minimo 1.8rem, scala fino a 3rem */
-    line-height: 1.2; /* compatto ma leggibile */
+    font-size: 12vw; /* scala con la larghezza, molto più grande */
+    line-height: 1.2;
+    text-align: center;
   }
 }
