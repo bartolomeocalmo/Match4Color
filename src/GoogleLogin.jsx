@@ -43,11 +43,7 @@ export default function GoogleLogin({ onUserChange }) {
         </div>
       ) : (
         <button className="google-login-btn" onClick={handleLogin}>
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
-            alt="Google"
-            className="google-logo"
-          />
+          <img src="/google.svg" alt="Google" className="google-logo" />
           Accedi con Google
         </button>
       )}
