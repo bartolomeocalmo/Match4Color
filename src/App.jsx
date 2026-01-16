@@ -14,8 +14,10 @@ import {
   collection,
   addDoc,
   getDocs,
-  doc,
+  query,
+  where,
   deleteDoc,
+  doc,
 } from "firebase/firestore";
 
 function App() {
@@ -49,21 +51,28 @@ function App() {
   useEffect(() => {
     const loadOutfits = async () => {
       if (!user) {
+        // utente anonimo → localStorage
         const localOutfits =
           JSON.parse(localStorage.getItem("savedOutfits")) || [];
         setSavedOutfits(localOutfits);
         return;
       }
 
+      // utente loggato → Firestore (SOLO suoi)
       try {
-        const q = await getDocs(collection(db, "outfits"));
-        const firestoreOutfits = q.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
-          .filter((o) => o.userId === user.uid);
-
-        setSavedOutfits(firestoreOutfits);
-      } catch (error) {
-        console.error("Errore caricamento Firestore:", error);
+        const q = query(
+          collection(db, "outfits"),
+          where("userId", "==", user.uid)
+        );
+        const snapshot = await getDocs(q);
+        const outfits = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }));
+        setSavedOutfits(outfits);
+      } catch (err) {
+        console.error("Errore caricamento Firestore:", err);
+        setSavedOutfits([]);
       }
     };
 
@@ -110,33 +119,23 @@ function App() {
   const saveOutfit = async () => {
     const outfit = { baseColor, garment, style, name: "" };
 
-    if (user) {
+    if (!user) {
+      // anonimo → localStorage
+      const newList = [outfit, ...savedOutfits];
+      setSavedOutfits(newList);
+      localStorage.setItem("savedOutfits", JSON.stringify(newList));
+    } else {
+      // loggato → Firestore
       try {
-        // salva su Firestore e ottieni id
         const docRef = await addDoc(collection(db, "outfits"), {
           ...outfit,
           userId: user.uid,
         });
-        const outfitWithId = { ...outfit, id: docRef.id };
 
-        // aggiorna lo stato dopo aver ottenuto l'id
-        const newList = [outfitWithId, ...savedOutfits];
-        setSavedOutfits(newList);
-
-        // localStorage opzionale: puoi anche tenerlo pulito per fallback
-        localStorage.removeItem("savedOutfits");
-      } catch (error) {
-        console.error("Errore salvataggio Firestore:", error);
-        // fallback locale
-        const newList = [outfit, ...savedOutfits];
-        setSavedOutfits(newList);
-        localStorage.setItem("savedOutfits", JSON.stringify(newList));
+        setSavedOutfits([{ ...outfit, id: docRef.id }, ...savedOutfits]);
+      } catch (err) {
+        console.error("Errore salvataggio Firestore:", err);
       }
-    } else {
-      // utente anonimo → salva solo localStorage
-      const newList = [outfit, ...savedOutfits];
-      setSavedOutfits(newList);
-      localStorage.setItem("savedOutfits", JSON.stringify(newList));
     }
 
     setToastMessage("Outfit salvato!");
@@ -153,19 +152,18 @@ function App() {
   };
 
   const deleteOutfit = async (idx) => {
-    const outfitToDelete = savedOutfits[idx];
+    const outfit = savedOutfits[idx];
     const newList = savedOutfits.filter((_, i) => i !== idx);
     setSavedOutfits(newList);
 
-    if (user && outfitToDelete.id) {
-      try {
-        const docRef = doc(db, "outfits", outfitToDelete.id);
-        await deleteDoc(docRef);
-      } catch (error) {
-        console.error("Errore eliminazione Firestore:", error);
-      }
-    } else {
+    if (!user) {
       localStorage.setItem("savedOutfits", JSON.stringify(newList));
+    } else if (outfit.id) {
+      try {
+        await deleteDoc(doc(db, "outfits", outfit.id));
+      } catch (err) {
+        console.error("Errore eliminazione Firestore:", err);
+      }
     }
   };
 
