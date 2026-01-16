@@ -48,57 +48,22 @@ function App() {
   // Carica outfit quando cambia user
   useEffect(() => {
     const loadOutfits = async () => {
-      const localOutfits =
-        JSON.parse(localStorage.getItem("savedOutfits")) || [];
-
       if (!user) {
-        // utente anonimo → solo localStorage
+        const localOutfits =
+          JSON.parse(localStorage.getItem("savedOutfits")) || [];
         setSavedOutfits(localOutfits);
         return;
       }
 
-      // utente loggato → Firestore
       try {
         const q = await getDocs(collection(db, "outfits"));
         const firestoreOutfits = q.docs
           .map((doc) => ({ id: doc.id, ...doc.data() }))
           .filter((o) => o.userId === user.uid);
 
-        // merge solo se ci sono outfit locali rimasti
-        const merged =
-          localOutfits.length > 0
-            ? [
-                ...firestoreOutfits,
-                ...localOutfits.filter(
-                  (lo) =>
-                    !firestoreOutfits.some(
-                      (fo) =>
-                        fo.baseColor === lo.baseColor &&
-                        fo.garment === lo.garment &&
-                        fo.style === lo.style
-                    )
-                ),
-              ]
-            : firestoreOutfits;
-
-        setSavedOutfits(merged);
-
-        // salva nuovi outfit locali in Firestore se non hanno id
-        for (const outfit of merged) {
-          if (!outfit.id) {
-            const docRef = await addDoc(collection(db, "outfits"), {
-              ...outfit,
-              userId: user.uid,
-            });
-            outfit.id = docRef.id;
-          }
-        }
-
-        // solo se merge completato
-        if (localOutfits.length > 0) localStorage.removeItem("savedOutfits");
+        setSavedOutfits(firestoreOutfits);
       } catch (error) {
-        console.error("Errore caricamento outfit Firestore:", error);
-        setSavedOutfits(localOutfits); // fallback locale
+        console.error("Errore caricamento Firestore:", error);
       }
     };
 
